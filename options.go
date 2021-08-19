@@ -5,6 +5,7 @@ import "context"
 type CallOptions struct {
 	Context context.Context
 	Target  interface{}
+	Fork    bool
 }
 
 type CallOption func(opts *CallOptions)
@@ -18,6 +19,12 @@ func WithContext(ctx context.Context) CallOption {
 func CopyTo(target interface{}) CallOption {
 	return func(opts *CallOptions) {
 		opts.Target = target
+	}
+}
+
+func Fork() CallOption {
+	return func(opts *CallOptions) {
+		opts.Fork = true
 	}
 }
 

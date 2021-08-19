@@ -60,12 +60,18 @@ func (e *Engine) Broadcast(notification interface{}, options ...decouple.CallOpt
 	var allRets []interface{}
 	ctxV := reflect.ValueOf(opts.Context)
 	for _, fn := range subFn {
-		val, err := fn.Call(ctxV, notV)
-		if val.IsValid() && val.Kind() == reflect.Struct {
-			allRets = append(allRets, val.Interface())
-		}
-		if err != nil {
-			allErrs = multierr.Append(allErrs, err)
+		if opts.Fork {
+			go func() {
+				_, _ = fn.Call(ctxV, notV)
+			}()
+		} else {
+			val, err := fn.Call(ctxV, notV)
+			if val.IsValid() && val.Kind() == reflect.Struct {
+				allRets = append(allRets, val.Interface())
+			}
+			if err != nil {
+				allErrs = multierr.Append(allErrs, err)
+			}
 		}
 	}
 
