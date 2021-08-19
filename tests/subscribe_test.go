@@ -15,8 +15,10 @@ var ErrOtherFromSubs = errors.New("hi other")
 func TestSubscribe(t *testing.T) {
 	container := decouple.NewContainer()
 	engine := local.NewEngine(container)
+	parentCtx := context.Background()
 
-	SubOne := func(_ context.Context, r MyIn) (MyOut, error) {
+	SubOne := func(ctx context.Context, r MyIn) (MyOut, error) {
+		require.Equal(t, ctx, parentCtx)
 		return MyOut{Message: r.Message}, nil
 	}
 
@@ -37,7 +39,7 @@ func TestSubscribe(t *testing.T) {
 	}
 
 	t.Run("simple publish", func(t *testing.T) {
-		res, err := engine.Broadcast(req)
+		res, err := engine.Broadcast(req, decouple.WithContext(parentCtx))
 		require.ErrorIs(t, err, ErrFromSubs)
 		require.ErrorIs(t, err, ErrOtherFromSubs)
 		require.Len(t, res, 1)

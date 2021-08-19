@@ -69,13 +69,6 @@ func (e *Engine) Broadcast(notification interface{}, options ...decouple.CallOpt
 		}
 	}
 
-	if opts.Target != nil {
-		err := copier.Copy(opts.Target, allRets)
-		if err != nil {
-			log.Print(err)
-		}
-	}
-
 	return allRets, allErrs
 }
 
