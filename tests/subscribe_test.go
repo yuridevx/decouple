@@ -2,8 +2,8 @@ package tests
 
 import (
 	"context"
-	"decouple/pkg"
-	"decouple/pkg/local"
+	"decouple"
+	"decouple/local"
 	"errors"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -13,7 +13,7 @@ var ErrFromSubs = errors.New("hi")
 var ErrOtherFromSubs = errors.New("hi other")
 
 func TestSubscribe(t *testing.T) {
-	container := pkg.NewContainer()
+	container := decouple.NewContainer()
 	engine := local.NewEngine(container)
 
 	SubOne := func(_ context.Context, r MyIn) (MyOut, error) {

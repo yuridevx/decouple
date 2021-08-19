@@ -1,7 +1,7 @@
-package pkg
+package decouple
 
 import (
-	"decouple/pkg/types"
+	types2 "decouple/types"
 	"fmt"
 	"reflect"
 	"sync"
@@ -13,10 +13,10 @@ type Container struct {
 
 	mNames sync.RWMutex
 
-	RequestMap  map[string]*types.Function
+	RequestMap  map[string]*types2.Function
 	mRequestMap sync.RWMutex
 
-	SubsMap  map[string][]*types.Function
+	SubsMap  map[string][]*types2.Function
 	mSubsMap sync.RWMutex
 }
 
@@ -26,14 +26,14 @@ func NewContainer() *Container {
 	cnt := &Container{
 		NameByType: map[reflect.Type]string{},
 		TypeByName: map[string]reflect.Type{},
-		RequestMap: map[string]*types.Function{},
-		SubsMap:    map[string][]*types.Function{},
+		RequestMap: map[string]*types2.Function{},
+		SubsMap:    map[string][]*types2.Function{},
 	}
 	return cnt
 }
 
 func (c *Container) Request(fn interface{}) {
-	fnReq, err := types.ParseFunction(fn)
+	fnReq, err := types2.ParseFunction(fn)
 	if err != nil {
 		panic(err)
 	}
@@ -48,7 +48,7 @@ func (c *Container) Request(fn interface{}) {
 }
 
 func (c *Container) Subscribe(fn interface{}) {
-	sFn, err := types.ParseFunction(fn)
+	sFn, err := types2.ParseFunction(fn)
 	if err != nil {
 		panic(err)
 	}
@@ -73,7 +73,7 @@ func (c *Container) GetProtoName(model interface{}) string {
 }
 
 func (c *Container) SetTypeName(rt reflect.Type, name string) {
-	t, err := types.ParseTypeNamed(rt, name)
+	t, err := types2.ParseTypeNamed(rt, name)
 	if err != nil {
 		panic(err)
 	}
@@ -97,7 +97,7 @@ func (c *Container) SetTypeName(rt reflect.Type, name string) {
 }
 
 func (c *Container) GetTypeName(rt reflect.Type) string {
-	t, err := types.ParseTypeNamed(rt, "")
+	t, err := types2.ParseTypeNamed(rt, "")
 	if err != nil {
 		panic(err)
 	}
@@ -112,7 +112,7 @@ func (c *Container) GetTypeName(rt reflect.Type) string {
 	return t.Name
 }
 
-func (c *Container) GetRequestFunction(t reflect.Type) *types.Function {
+func (c *Container) GetRequestFunction(t reflect.Type) *types2.Function {
 	name := c.GetTypeName(t)
 
 	c.mRequestMap.RLock()
@@ -122,7 +122,7 @@ func (c *Container) GetRequestFunction(t reflect.Type) *types.Function {
 	return rf
 }
 
-func (c *Container) GetSubscribeFunctions(t reflect.Type) []*types.Function {
+func (c *Container) GetSubscribeFunctions(t reflect.Type) []*types2.Function {
 	name := c.GetTypeName(t)
 
 	c.mSubsMap.RLock()

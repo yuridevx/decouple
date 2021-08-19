@@ -2,7 +2,7 @@ package tests
 
 import (
 	"context"
-	"decouple/pkg/types"
+	"decouple/types"
 	"github.com/stretchr/testify/require"
 	"testing"
 )

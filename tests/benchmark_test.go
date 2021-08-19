@@ -2,13 +2,13 @@ package tests
 
 import (
 	"context"
-	"decouple/pkg"
-	"decouple/pkg/local"
+	"decouple"
+	"decouple/local"
 	"testing"
 )
 
 func BenchmarkEngine(t *testing.B) {
-	container := pkg.NewContainer()
+	container := decouple.NewContainer()
 	engine := local.NewEngine(container)
 	container.Request(respondBench)
 
@@ -21,7 +21,7 @@ func BenchmarkEngine(t *testing.B) {
 	})
 
 	t.Run("benchmark request copy", func(b *testing.B) {
-		_, _ = engine.Request(myReq, pkg.CopyTo(&myRes))
+		_, _ = engine.Request(myReq, decouple.CopyTo(&myRes))
 	})
 }
 

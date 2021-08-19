@@ -1,8 +1,8 @@
 package local
 
 import (
-	"decouple/pkg"
-	"decouple/pkg/types"
+	"decouple"
+	"decouple/types"
 	"fmt"
 	"github.com/jinzhu/copier"
 	"go.uber.org/multierr"
@@ -11,10 +11,10 @@ import (
 )
 
 type Engine struct {
-	Container *pkg.Container
+	Container *decouple.Container
 }
 
-func (e *Engine) Request(request interface{}, options ...pkg.CallOption) (interface{}, error) {
+func (e *Engine) Request(request interface{}, options ...decouple.CallOption) (interface{}, error) {
 	reqV := reflect.ValueOf(request)
 	reqT, err := types.ParseType(reqV.Type())
 	if err != nil {
@@ -25,7 +25,7 @@ func (e *Engine) Request(request interface{}, options ...pkg.CallOption) (interf
 		panic(fmt.Errorf("request handler not found for %s", reqT.Name))
 	}
 
-	opts := pkg.NewCallOptions(options)
+	opts := decouple.NewCallOptions(options)
 	ctxV := reflect.ValueOf(opts.Context)
 
 	resV, err := reqFn.Call(ctxV, reqV)
@@ -44,7 +44,7 @@ func (e *Engine) Request(request interface{}, options ...pkg.CallOption) (interf
 	return res, nil
 }
 
-func (e *Engine) Broadcast(notification interface{}, options ...pkg.CallOption) ([]interface{}, error) {
+func (e *Engine) Broadcast(notification interface{}, options ...decouple.CallOption) ([]interface{}, error) {
 	notV := reflect.ValueOf(notification)
 	notT, err := types.ParseType(notV.Type())
 	if err != nil {
@@ -54,7 +54,7 @@ func (e *Engine) Broadcast(notification interface{}, options ...pkg.CallOption) 
 	if len(subFn) == 0 {
 		return nil, nil
 	}
-	opts := pkg.NewCallOptions(options)
+	opts := decouple.NewCallOptions(options)
 
 	var allErrs error
 	var allRets []interface{}
@@ -79,9 +79,9 @@ func (e *Engine) Broadcast(notification interface{}, options ...pkg.CallOption) 
 	return allRets, allErrs
 }
 
-var _ pkg.Call = (*Engine)(nil)
+var _ decouple.Call = (*Engine)(nil)
 
-func NewEngine(container *pkg.Container) *Engine {
+func NewEngine(container *decouple.Container) *Engine {
 	return &Engine{
 		Container: container,
 	}

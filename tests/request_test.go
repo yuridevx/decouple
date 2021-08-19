@@ -2,14 +2,14 @@ package tests
 
 import (
 	"context"
-	"decouple/pkg"
-	"decouple/pkg/local"
+	"decouple"
+	"decouple/local"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestEngine(t *testing.T) {
-	container := pkg.NewContainer()
+	container := decouple.NewContainer()
 	engine := local.NewEngine(container)
 	parentCtx := context.Background()
 
@@ -22,14 +22,14 @@ func TestEngine(t *testing.T) {
 	req := MyIn{Message: "Hi"}
 
 	t.Run("simple request", func(t *testing.T) {
-		res, _ := engine.Request(req, pkg.WithContext(parentCtx))
+		res, _ := engine.Request(req, decouple.WithContext(parentCtx))
 		myRes := res.(MyOut)
 		require.Equal(t, req.Message, myRes.Message)
 	})
 
 	t.Run("response copy", func(t *testing.T) {
 		res := MyOut{}
-		_, _ = engine.Request(req, pkg.CopyTo(&res), pkg.WithContext(parentCtx))
+		_, _ = engine.Request(req, decouple.CopyTo(&res), decouple.WithContext(parentCtx))
 		require.Equal(t, res.Message, req.Message)
 	})
 
